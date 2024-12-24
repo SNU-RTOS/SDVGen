@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 ################################################################
 #  Non-adaptive AUTOSAR SOME/IP Communication Module Converter #
+#                  with FIDL to AIDL translator                #
 ################################################################
 
 import argparse, os, sys

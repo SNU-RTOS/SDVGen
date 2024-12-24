@@ -174,7 +174,6 @@ class Event:
         self.name = None    
         self.arg_name = None 
         self.type = None
-        # argument에 대한 특정 있을 시 적용 필요
         # FDEPL from below
         self.eventId = None
         self.imports = imports
@@ -450,7 +449,7 @@ class Interface:
         for method in methods:
             self.methods.append(Method(method, self.imports))
     
-    # Field, Event, Method에서 쓰이는 Data type들, Data type이 complex type이라면 추가적인 조치가 필요함.
+    # Field, Event, Method에서 쓰이는 Data type들
     def __get_datatype__(self,init_root):
         datatypes = find_roots_of_tag(init_root, "STD-CPP-IMPLEMENTATION-DATA-TYPE")
         if datatypes:
@@ -505,8 +504,6 @@ class Interface:
                         enum_nodes = find_roots_of_tag(init_root, "COMPU-METHOD")
                         self.imports.append(data_name.text)
                         if enum_nodes:
-                            # print("EEEE")
-                            # print(data_name.text)
                             for enum_node in enum_nodes:
                                 name_check = find_first_root(enum_node, "SHORT-NAME")
                                 if name_check.text == data_name.text:
@@ -539,7 +536,6 @@ class Interface:
                 id_node = find_first_root(instance, "SERVICE-INTERFACE-ID")
                 if id_node:
                     self.serviceId = id_node.text
-                ##### ID 와 Reliable 뽑아내서 Name에 맞게 저장하는 것 필요~
                 # FIELDS
                 if self.fields:
                     for field in self.fields:
@@ -550,23 +546,15 @@ class Interface:
                                 field_get_id = find_first_root(field_get, "METHOD-ID")
                                 field_get_protocol = find_first_root(field_get, "TRANSPORT-PROTOCOL")
                                 if field_get_id:
-                                    # field.getter.append(field_get_id.text)
-                                    # field.getter[1] = (field_get_id.text)
                                     field.getter["id"] = field_get_id.text
                                 else:
                                     raise Exception("{}: No Getter Id Specified")
                                 if field_get_protocol:
                                     if field_get_protocol.text == "UDP":
-                                        # field.getter.append("false")
-                                        # field.getter[2] = "false"
                                         field.getter["protocol"] = "false"
                                     else:
-                                        # field.getter.append("true")
-                                        # field.getter[2] = "true"
                                         field.getter["protocol"] = "true"
                                 else:
-                                    # field.getter.append("false")
-                                    # field.getter[2] = "false"
                                     field.getter["protocol"] = "false"
                                     # raise Exception("{}: No Getter Id Specified")
                             elif field.getter["has_getter"] == "true" and not field_get:
@@ -576,22 +564,15 @@ class Interface:
                                 field_set_id = find_first_root(field_set, "METHOD-ID")
                                 field_set_protocol = find_first_root(field_set, "TRANSPORT-PROTOCOL")
                                 if field_set_id:
-                                    # field.setter.append(field_set_id.text)
-                                    # field.setter[1] = field_set_id.text
                                     field.setter["id"] = field_set_id.text
                                 else:
                                     raise Exception("{} - {}: No Setter Id Specified".format(self.name, field.name))
                                 if field_set_protocol:
                                     if field_set_protocol.text == "UDP":
-                                        # field.setter.append("false")
-                                        # field.setter[2] = "false"
                                         field.setter["protocol"] = "false"
                                     else:
-                                        # field.setter.append("true")
-                                        # field.setter[2] = "true"
                                         field.setter["protocol"] = "true"
                                 else:
-                                    # field.setter.append("false")
                                     field.setter["protocol"] = "false"
                                     # raise Exception("{} - {}: No Setter Id Specified".format(self.name, field.name))
                             elif field.setter["has_setter"] == "true" and not field_set:
@@ -604,22 +585,15 @@ class Interface:
                                 event_groups = find_roots_of_tag(instance, "SOMEIP-EVENT-GROUP")
                                 if field_notifier_id:
                                     ### Event id는 ARXML에서의 id에 0x8000을 더한 값임
-                                    # field.notifier.append(str(int(field_notifier_id.text) + 32768))
-                                    # field.notifier[1] = str(int(field_notifier_id.text) + 32768)
                                     field.notifier["id"] = str(int(field_notifier_id.text) + 32768)
                                 else:
                                     raise Exception("{} - {}: No Notifier Id Specified".format(self.name, field.name))
                                 if field_notifier_protocol:
                                     if field_notifier_protocol.text == "UDP":
-                                        # field.notifier.append("false")
-                                        # field.notifier[2] = "false"
                                         field.notifier["protocol"] = "false"
                                     else:
-                                        # field.notifier.append("true")
-                                        # field.notifier[2] = "true"
                                         field.notifier["protocol"] = "true"
                                 else:
-                                    # field.notifier.append("false")
                                     # raise Exception("{} - {}: No Notifier Id Specified".format(self.name, field.name))
                                     field.notifier["protocol"] = "false"
                                     
@@ -635,7 +609,6 @@ class Interface:
                                                         field.eventgroups.append(event_id.text)
                             elif field.notifier["has_notifier"] == "true" and not field_notifier:
                                 raise Exception("{} - {}: Has Notifier But No Notifier Id".format(self.name, field.name))
-                            #print(field.getter, field.setter, field.notifier)
                 # EVENTS
                 if self.events:
                     for event in self.events:
@@ -669,7 +642,6 @@ class Interface:
                 if self.methods:
                     for method in self.methods:
                         method_instance = find_root_named(instance, "SOMEIP-METHOD-DEPLOYMENT", method.name)
-                        # method instance를 이상하게 정의해놓은 파일들이 있음. SHORT-NAME에 method명 말고 다른 이름 적혀 있는 경우
                         if method_instance:
                             method_id = find_first_root(method_instance[0], "METHOD-ID")
                             method_protocol = find_first_root(method_instance[0], "TRANSPORT-PROTOCOL")
@@ -1035,7 +1007,6 @@ define org.genivi.commonapi.someip.deployment for interface {packages}.{interfac
     
     """
     
-    ### Out Arguments 하고 Event Group 추가 필요
     if interface.events:
         for event in interface.events:
             event_str = ""
@@ -1048,7 +1019,6 @@ define org.genivi.commonapi.someip.deployment for interface {packages}.{interfac
     
     """
     
-    ### In / Out Argumetns 추가 필요
     if interface.methods:
         for method in interface.methods:
             fdepl_str += f"""method {method.name} {{
@@ -1098,7 +1068,7 @@ define org.genivi.commonapi.someip.deployment for interface {packages}.{interfac
     
     fdepl_str += f"""
 }}"""
-    ### Interface에 해당하는 Instance 추가할 것
+
     if interface.instances:
         for instance in interface.instances:
             fdepl_str += f"""\n\ndefine org.genivi.commonapi.someip.deployment for provider as {instance.name} {{
