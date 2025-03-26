@@ -127,7 +127,7 @@ class GUIApp(tk.Tk):
         # Convert Buttons
         self.convert1_button = tk.Button(self.widget_frame, text="FIDL to AIDL", command=self.convert1)
         self.convert1_button.pack(padx=10, pady=5)
-        self.convert2_button = tk.Button(self.widget_frame, text="FIDL to Communication Module Codes", command=self.convert2)
+        self.convert2_button = tk.Button(self.widget_frame, text="FIDL to Communication Module Code", command=self.convert2)
         self.convert2_button.pack(padx=10, pady=5) #side="left",
 
         self.stdout_redirector = TextRedirector(self.monitor)
